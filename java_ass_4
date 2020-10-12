@@ -1,0 +1,134 @@
+package temp;
+
+
+import java.util.Scanner;
+
+public class Temp {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+			int n;
+			System.out.println("Enter number of rows: ");
+			Scanner s = new Scanner(System.in);
+			n= s.nextInt();
+			s.nextLine();
+			
+			
+			String[] crops= new String[n];
+			System.out.println("Enter values");
+			for(int i=0;i<n;i++) {
+				crops[i]= s.nextLine().trim();
+			}
+			int m= crops[0].length();
+			char [][] matrix_crops = new char[n][m];
+			for(int i=0;i<n;i++) {
+				for(int j=0;j<m;j++) {
+					matrix_crops[i][j] = crops[i].charAt(j);
+				}
+			}
+			
+			boolean [][] visited= new boolean[n][m];
+			for(int i=0;i<n;i++) {
+				for(int j=0;j<m;j++) {
+					visited[i][j]=false;
+				}
+			}
+			
+			int val = replant(matrix_crops,0,0,n,m,visited);
+			if(val==-1) {
+				System.out.println("Not Possible");
+			}
+			else {
+				int ans=0;
+				for(int i=0;i<n;i++) {
+					for(int j=0;j<m;j++) {
+						if(visited[i][j])
+							ans++;
+					}
+				}
+				System.out.println("Minimum Replacements needed are" + ans);
+			}
+			
+			
+	}
+	
+	public static int replant(char matrix_crops[][], int i,int j, int n, int m, boolean [][] visited) {
+		if(i==n)
+			return 0;
+		
+		char left='\0';
+		char up= '\0';
+		char right='\0';
+		char down= '\0';
+		if(i!=0) {
+			up= matrix_crops[i-1][j];
+		}
+		if(j!=0) {
+			left= matrix_crops[i][j-1]; 
+		}
+		if(i!=n-1) {
+			down= matrix_crops[i+1][j];
+		}
+		if(j!=m-1) {
+			right= matrix_crops[i][j+1];
+		}
+		
+		char curr_char= matrix_crops[i][j];
+		boolean left_up=false;
+
+		if((left!='\0' && curr_char==left) || (up!='\0' && curr_char==up))
+			left_up=true;
+
+		
+		if(left_up==true) {
+			int min=Integer.MAX_VALUE;
+			char final_ch= '\0';
+			for(char c = 'a';c<'z';c++) {
+				
+				if(left!=c && right!=c && up!=c && down!=c) {
+					char [][] new_matrix= matrix_crops;
+					new_matrix[i][j]= c;
+					int count;
+					if(j==m-1) {
+						count= replant(new_matrix,i+1,0,n,m,visited);
+					}
+					else
+						count= replant(new_matrix,i,j+1,n,m,visited);
+					if(count<min) {
+						min=count;
+						final_ch= c;
+					}
+
+				}
+
+					
+			}
+			if(final_ch!='\0') {
+				matrix_crops[i][j]= final_ch;
+				visited[i][j]=true;
+				
+			}
+			if(min== Integer.MAX_VALUE)
+				return min;
+			return min+1;
+				
+			
+		}
+		else {
+			int min=Integer.MAX_VALUE;
+		
+			if(j==m-1) {
+				min= replant(matrix_crops,i+1,0,n,m,visited);
+			}
+			else
+				min= replant(matrix_crops,i,j+1,n,m,visited);
+
+			if(min==Integer.MAX_VALUE)
+				return min;
+			return min;
+
+		}
+		//return 0;
+	}
+
+}
